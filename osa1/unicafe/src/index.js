@@ -19,9 +19,9 @@ const Statistics = (props) => {
 
     if (total > 0) {
         return (
-            <div>
+            <>
+                <h1>statistics</h1>
                 <table>
-                        <h1>statistics</h1>
                     <tbody>
                         <Statistic text='good' value={props.good} />
                         <Statistic text='neutral' value={props.neutral} />
@@ -31,13 +31,13 @@ const Statistics = (props) => {
                         <Statistic text='positive' value={posFeedback + ' %'} />
                     </tbody>
                 </table>
-            </div>
+            </>
         )
     } else {
         return (
-            <div>
-                <p>No feedback is given yet</p>
-            </div>
+            <>
+                <p>No feedback given</p>
+            </>
         )
     }
 }
