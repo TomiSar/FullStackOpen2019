@@ -1,17 +1,29 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Note from './components/Note'
+import axios from 'axios'
 
-const App = (props) => {
-  const [notes, setNotes] = useState(props.notes)
+const App = () => {
+  const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
 
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/notes')
+      .then(response => {
+        setNotes(response.data)
+      })
+  }, [])
 
   const notesToShow = showAll
-  ? notes
-  : notes.filter(note => note.important === true)
+    ? notes
+    : notes.filter(note => note.important)
 
-  const rows = () => notesToShow.map(note => <Note key={note.id} note={note} />
+  const rows = () => notesToShow.map(note =>
+    <Note
+      key={note.id}
+      note={note}
+    />
   )
 
   const handleNoteChange = (event) => {
@@ -37,7 +49,7 @@ const App = (props) => {
       <h1>Notes</h1>
       <div>
         <button onClick={() => setShowAll(!showAll)}>
-        show {showAll ? 'important' : 'all' }
+          show {showAll ? 'important' : 'all'}
         </button>
       </div>
       <ul>
@@ -54,4 +66,4 @@ const App = (props) => {
   )
 }
 
-export default App 
+export default App
