@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import axios from 'axios';
 import FilterSearching from './components/FilterSearching';
 import PersonForm from './components/PersonForm';
 import PersonList from './components/PersonList';
@@ -8,15 +9,19 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      persons:
-        [{ name: 'Arto Hellas', number: '040-123456' },
-        { name: 'Ada Lovelace', number: '39-44-5323523' },
-        { name: 'Dan Abramov', number: '12-43-234345' },
-        { name: 'Mary Poppendieck', number: '39-23-6423122' }],
+      //...\osa2\puhelinluettelo\db.json
+      persons: [],
       newName: '',
       newNumber: '',
       filter: ''
     };
+  }
+
+  componentDidMount() {
+    console.log('didmount!');
+    axios.get('http://localhost:3001/persons/').then(response => {
+      this.setState({ persons: response.data });
+    });
   }
 
   addPerson = event => {
