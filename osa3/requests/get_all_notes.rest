@@ -1,0 +1,2 @@
+//Visual Studio Coden REST client
+GET http://localhost:3001/notes
