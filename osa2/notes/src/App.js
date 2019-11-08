@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
+//import axios from 'axios'
 import Note from './components/Note'
-import axios from 'axios'
+import noteService from './services/notes'
 
 const App = () => {
   const [notes, setNotes] = useState([])
@@ -8,11 +9,9 @@ const App = () => {
   const [showAll, setShowAll] = useState(true)
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/notes')
-      .then(response => {
-        setNotes(response.data)
-      })
+    noteService
+      .getAll()
+      .then(initialNotes => setNotes(initialNotes))
   }, [])
 
   const notesToShow = showAll
@@ -23,11 +22,11 @@ const App = () => {
     <Note
       key={note.id}
       note={note}
+      toggleImportance={() => toggleImportanceOf(note.id)}
     />
   )
 
   const handleNoteChange = (event) => {
-    console.log(event.target.value)
     setNewNote(event.target.value)
   }
 
@@ -39,9 +38,31 @@ const App = () => {
       important: Math.random() > 0.5,
       id: notes.length + 1,
     }
+    //event handler to send notes at json-server
+    noteService
+      .create(noteObject)
+      .then(data => {
+        setNotes(notes.concat(data))
+        setNewNote('')
+      })
+  }
 
-    setNotes(notes.concat(noteObject))
-    setNewNote('')
+  const toggleImportanceOf = id => {
+    const note = notes.find(note => note.id === id)
+
+    //luodaan uusi olio, jonka sisältö on sama kuin vanhan olion sisältö poislukien kenttä important
+    const changedNote = { ...note, important: !note.important }
+
+    noteService
+      .update(id, changedNote)
+      .then(returnedNote => {
+        setNotes(notes.map(note => note.id !== id ? note : returnedNote))
+      })
+      .catch(error => {
+        alert(`the note '${note.content}' was already deleted from server`)
+        setNotes(notes.filter(n => n.id !== id))
+      })
+    //console.log(`importance of ${id} needs to be toggled`)
   }
 
   return (

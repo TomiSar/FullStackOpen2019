@@ -10,13 +10,31 @@
       "id": 2,
       "content": "Browser can execute only Javascript",
       "date": "2019-05-30T18:39:34.091Z",
-      "important": false
+      "important": true
     },
     {
       "id": 3,
       "content": "GET and POST are the most important methods of HTTP protocol",
       "date": "2019-05-30T19:20:14.298Z",
-      "important": true
+      "important": false
+    },
+    {
+      "content": "Moikka minun nimeni on uusi muistiinpano",
+      "date": "2019-11-08T08:30:09.563Z",
+      "important": false,
+      "id": 4
+    },
+    {
+      "content": "I am note from JavaScript",
+      "date": "2019-11-08T09:42:08.739Z",
+      "important": true,
+      "id": 5
+    },
+    {
+      "content": "I am just another coder",
+      "date": "2019-11-08T10:46:43.244Z",
+      "important": true,
+      "id": 6
     }
   ]
 }
