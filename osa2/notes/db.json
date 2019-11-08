@@ -4,13 +4,13 @@
       "id": 1,
       "content": "HTML is easy",
       "date": "2019-05-30T17:30:31.098Z",
-      "important": true
+      "important": false
     },
     {
       "id": 2,
       "content": "Browser can execute only Javascript",
       "date": "2019-05-30T18:39:34.091Z",
-      "important": true
+      "important": false
     },
     {
       "id": 3,
@@ -19,7 +19,7 @@
       "important": false
     },
     {
-      "content": "Moikka minun nimeni on uusi muistiinpano",
+      "content": "Hello my name is a new note",
       "date": "2019-11-08T08:30:09.563Z",
       "important": false,
       "id": 4
@@ -27,14 +27,26 @@
     {
       "content": "I am note from JavaScript",
       "date": "2019-11-08T09:42:08.739Z",
-      "important": true,
+      "important": false,
       "id": 5
     },
     {
       "content": "I am just another coder",
       "date": "2019-11-08T10:46:43.244Z",
-      "important": true,
+      "important": false,
       "id": 6
+    },
+    {
+      "content": "New task under development",
+      "date": "2019-11-08T13:14:10.783Z",
+      "important": true,
+      "id": 7
+    },
+    {
+      "content": "Hello this is just another boring task",
+      "date": "2019-11-08T13:24:21.445Z",
+      "important": false,
+      "id": 8
     }
   ]
 }

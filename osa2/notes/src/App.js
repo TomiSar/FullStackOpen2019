@@ -1,90 +1,113 @@
-import React, { useState, useEffect } from 'react'
-//import axios from 'axios'
+import React from 'react'
 import Note from './components/Note'
+import Notification from './components/Notification'
 import noteService from './services/notes'
 
-const App = () => {
-  const [notes, setNotes] = useState([])
-  const [newNote, setNewNote] = useState('')
-  const [showAll, setShowAll] = useState(true)
+class App extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      notes: [],
+      newNote: '',
+      showAll: true,
+      error: null
+    }
+  }
 
-  useEffect(() => {
+  componentWillMount() {
     noteService
       .getAll()
-      .then(initialNotes => setNotes(initialNotes))
-  }, [])
-
-  const notesToShow = showAll
-    ? notes
-    : notes.filter(note => note.important)
-
-  const rows = () => notesToShow.map(note =>
-    <Note
-      key={note.id}
-      note={note}
-      toggleImportance={() => toggleImportanceOf(note.id)}
-    />
-  )
-
-  const handleNoteChange = (event) => {
-    setNewNote(event.target.value)
+      .then(notes => {
+        this.setState({ notes })
+      })
   }
 
-  const addNote = (event) => {
+  toggleVisible = () => {
+    this.setState({ showAll: !this.state.showAll })
+  }
+
+  addNote = (event) => {
     event.preventDefault()
     const noteObject = {
-      content: newNote,
-      date: new Date().toISOString(),
-      important: Math.random() > 0.5,
-      id: notes.length + 1,
+      content: this.state.newNote,
+      date: new Date(),
+      important: Math.random() > 0.5
     }
-    //event handler to send notes at json-server
+
     noteService
       .create(noteObject)
-      .then(data => {
-        setNotes(notes.concat(data))
-        setNewNote('')
+      .then(newNote => {
+        this.setState({
+          notes: this.state.notes.concat(newNote),
+          newNote: ''
+        })
       })
   }
 
-  const toggleImportanceOf = id => {
-    const note = notes.find(note => note.id === id)
+  toggleImportanceOf = (id) => {
+    return () => {
+      const note = this.state.notes.find(n => n.id === id)
+      const changedNote = { ...note, important: !note.important }
 
-    //luodaan uusi olio, jonka sisältö on sama kuin vanhan olion sisältö poislukien kenttä important
-    const changedNote = { ...note, important: !note.important }
-
-    noteService
-      .update(id, changedNote)
-      .then(returnedNote => {
-        setNotes(notes.map(note => note.id !== id ? note : returnedNote))
-      })
-      .catch(error => {
-        alert(`the note '${note.content}' was already deleted from server`)
-        setNotes(notes.filter(n => n.id !== id))
-      })
-    //console.log(`importance of ${id} needs to be toggled`)
+      noteService
+        .update(id, changedNote)
+        .then(changedNote => {
+          this.setState({
+            notes: this.state.notes.map(note => note.id !== id ? note : changedNote)
+          })
+        })
+        .catch(error => {
+          this.setState({
+            error: `note '${note.content}' has already been removed from server`,
+            notes: this.state.notes.filter(n => n.id !== id)
+          })
+          setTimeout(() => {
+            this.setState({ error: null })
+          }, 50000)
+        })
+    }
   }
 
-  return (
-    <div>
-      <h1>Notes</h1>
+  handleNoteChange = (event) => {
+    console.log(event.target.value)
+    this.setState({ newNote: event.target.value })
+  }
+
+  render() {
+    const notesToShow =
+      this.state.showAll ?
+        this.state.notes :
+        this.state.notes.filter(note => note.important === true)
+
+    const label = this.state.showAll ? 'only important' : 'all'
+
+    return (
       <div>
-        <button onClick={() => setShowAll(!showAll)}>
-          show {showAll ? 'important' : 'all'}
-        </button>
+        <h1>Notes</h1>
+        <Notification message={this.state.error} />
+        <div>
+          <button onClick={this.toggleVisible}>
+            show {label}
+          </button>
+        </div>
+        <ul>
+          {notesToShow.map(note =>
+            <Note
+              key={note.id}
+              note={note}
+              toggleImportance={this.toggleImportanceOf(note.id)}
+            />)}
+        </ul>
+        <form onSubmit={this.addNote}>
+          <input
+            value={this.state.newNote}
+            onChange={this.handleNoteChange}
+          />
+          <button type="submit">save</button>
+        </form>
       </div>
-      <ul>
-        {rows()}
-      </ul>
-      <form onSubmit={addNote}>
-        <input
-          value={newNote}
-          onChange={handleNoteChange}
-        />
-        <button type="submit">save</button>
-      </form>
-    </div>
-  )
+    )
+  }
 }
 
 export default App
