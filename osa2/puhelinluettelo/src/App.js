@@ -37,16 +37,24 @@ class App extends React.Component {
       phoneService.create(personObj).then(response => {
         this.setState({
           persons: this.state.persons.concat(personObj),
-          newName: '',
-          newid: ''
+          newName: ''
         })
       });
     } else {
-      this.setState({
-        newName: '',
-        newNumber: ''
-      })
-      alert(`${this.state.newName} is already added to phonebook`)
+      if (window.confirm(`${this.state.newName} is already added to phonebook, replace the old number with a new one?`)) {
+        phoneService.getAll().then(response => {
+          const oldNumber = response.data.find(person => person.name === this.state.newName)
+
+          phoneService.update(oldNumber.id, personObj).then(response => {
+            this.setState({
+              persons: this.state.persons.map(person => (person.id !== oldNumber.id ? person : personObj)),
+              newName: '',
+              newNumber: '',
+              newId: ''
+            })
+          })
+        })
+      }
     }
   }
 
