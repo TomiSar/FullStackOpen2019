@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PersonList = ({ persons, filter, removePerson }) => {
+const PersonList = ({ persons, filter, remove }) => {
     const shownPersons =
         filter === '' ? persons : persons.filter(person => {
             return person.name.indexOf(filter) !== -1;
@@ -9,7 +9,8 @@ const PersonList = ({ persons, filter, removePerson }) => {
     return (
         <div>
             {shownPersons.map(person => (
-                <p key={person.name}> {person.name} {person.number} </p>
+                <p key={person.name}> {person.name} {person.number}
+                    <button onClick={() => remove(person.id, person.name)}>delete</button> </p>
             ))}
         </div>
     )

@@ -1,51 +1,54 @@
 import React from 'react';
-import axios from 'axios';
 import FilterSearching from './components/FilterSearching';
 import PersonForm from './components/PersonForm';
 import PersonList from './components/PersonList';
+import phoneService from './services/Phonebook'
 
-//https://reactjs.org/docs/hooks-state.html
+//https://reactjs.org/docs/hooks-state.html //...\osa2\puhelinluettelo\db.json
 class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      //...\osa2\puhelinluettelo\db.json
       persons: [],
       newName: '',
       newNumber: '',
+      newId: '',
       filter: ''
     };
   }
 
   componentDidMount() {
-    console.log('didmount!');
-    axios.get('http://localhost:3001/persons/').then(response => {
-      this.setState({ persons: response.data });
-    });
+    phoneService.getAll().then(response => {
+      this.setState({ persons: response.data })
+    })
   }
 
   addPerson = event => {
-    event.preventDefault()
+    event.preventDefault();
     const personObj = {
       name: this.state.newName,
-      number: this.state.newNumber
-    }
+      number: this.state.newNumber,
+      id: this.state.newId
+    };
 
     const isOnPhonebook = this.state.persons.map(person => person.name).includes(this.state.newName);
+
     if (!isOnPhonebook) {
-      const persons = this.state.persons.concat(personObj);
-      this.setState({
-        persons,
-        newName: ''
+      phoneService.create(personObj).then(response => {
+        this.setState({
+          persons: this.state.persons.concat(personObj),
+          newName: '',
+          newid: ''
+        })
       });
     } else {
       this.setState({
         newName: '',
-        newNumber: '',
+        newNumber: ''
       })
       alert(`${this.state.newName} is already added to phonebook`)
     }
-  };
+  }
 
   addNewName = event => {
     this.setState({ newName: event.target.value });
@@ -58,6 +61,21 @@ class App extends React.Component {
   addFilter = event => {
     this.setState({ filter: event.target.value });
   };
+
+  removePerdonPhonebook = (id, name) => {
+    const message = `Delete ${name} ?`
+
+    if (window.confirm(message)) {
+      phoneService.remove(id).then(response => {
+        phoneService.getAll().then(response => {
+          this.setState({ persons: response.data })
+        })
+      })
+        .catch(error => {
+          console.log('Fail to remove number')
+        })
+    }
+  }
 
   render() {
     return (
@@ -72,7 +90,7 @@ class App extends React.Component {
           addNewNumber={this.addNewNumber}
         />
         <h2>Numbers</h2>
-        <PersonList persons={this.state.persons} filter={this.state.filter} />
+        <PersonList persons={this.state.persons} filter={this.state.filter} remove={this.removePerdonPhonebook} />
       </div>
     );
   }
