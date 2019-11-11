@@ -1,64 +1,50 @@
-//import http from 'http'
-//Deploy nodeJS embedded web-server defining module
-//https://nodejs.org/docs/latest-v8.x/api/http.html
-//REST commands
-/*URL	    command	action
-notes/10   	GET	    rerieves a single resource
-notes	    GET	    rerieves all resources from collection
-notes	    POST	creates a new resource from included request data
-notes/10	DELETE  deletes the specified resource 
-notes/10	PUT	    replaces the specified resource with the included request data
-notes/10	PATCH	replaces the specified resource with the included request data*/
-
-//const http = require('http')
 const express = require('express')
 const app = express()
+const cors = require('cors')
+app.use(cors())
+
 const bodyParser = require('body-parser')
 
 app.use(bodyParser.json())
 
+//backend --> http://localhost:3001/notes and frontend --> http://localhost:3001
 let notes = [
     {
         id: 1,
-        content: "HTML is easy to learn",
+        content: "HTML is easy",
         date: "2019-05-30T17:30:31.098Z",
-        important: true,
+        important: true
     },
     {
         id: 2,
-        content: "Browser can oly execute JavaScript",
+        content: "Browser can execute only Javascript",
         date: "2019-05-30T18:39:34.091Z",
-        important: false,
+        important: false
     },
     {
         id: 3,
-        content: "GET and POST are the most important methods of the HTTP protocol",
+        content: "GET and POST are the most important methods of HTTP protocol",
         date: "2019-05-30T19:20:14.298Z",
-        import: true,
+        important: true
     },
     {
         id: 4,
-        content: "JavaScript coding is awesome. One of my favourite things =)",
-        date: "2019-05-30T20:07:12.197Z",
-        import: true,
-    },
-    {
-        id: 10,
-        content: "This in the 10th note",
-        date: "2019-05-30T21:09:32.493Z",
-        import: true,
+        content: "Programming JavaScript is one of my favourite things",
+        date: "2019-05-19T19:13:14.112Z",
+        important: true
     }
+
 ]
 
-app.get('/', (request, response) => {
-    response.send('<h1>Hello world this is amazing Application =)!</h1>')
+app.get('/', (req, res) => {
+    res.send('<h1>Hello World this is goin to be awesome application!</h1>')
 })
 
 const generateId = () => {
-    const maxID = notes.length > 0 
-    ? Math.max(...notes.map(note => note.id)) 
-    : 0
-    return maxID + 1
+    const maxId = notes.length > 0
+        ? Math.max(...notes.map(n => n.id))
+        : 0
+    return maxId + 1
 }
 
 app.post('/notes', (request, response) => {
@@ -66,7 +52,7 @@ app.post('/notes', (request, response) => {
 
     if (!body.content) {
         return response.status(400).json({
-            error: 'content misssing'
+            error: 'content missing'
         })
     }
 
@@ -78,20 +64,21 @@ app.post('/notes', (request, response) => {
     }
 
     notes = notes.concat(note)
+
     response.json(note)
 })
 
-app.get("/notes", (request, response) => {
+app.get('/notes', (request, response) => {
     response.json(notes)
 })
 
 app.get('/notes/:id', (request, response) => {
-    const id = Number(request.params.id) //const id = request.params.id => cast to numeric value
+    const id = Number(request.params.id)  //=> cast to numeric value
     const note = notes.find(note => note.id === id)
-    if (!note) {
-        response.status(404).end()
-    } else {
+    if (note) {
         response.json(note)
+    } else {
+        response.status(404).end()
     }
 })
 
@@ -99,6 +86,7 @@ app.get('/notes/:id', (request, response) => {
 app.delete('/notes/:id', (request, response) => {
     const id = Number(request.params.id)
     notes = notes.filter(note => note.id !== id)
+
     response.status(204).end()
 })
 
@@ -106,6 +94,20 @@ const PORT = 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
+
+//import http from 'http'
+//Deploy nodeJS embedded web-server defining module
+//https://nodejs.org/docs/latest-v8.x/api/http.html
+//REST commands
+/*URL	    command	action
+notes/10   	GET	    rerieves a single resource
+notes	    GET	    rerieves all resources from collection
+notes	    POST	creates a new resource from included request data
+notes/10	DELETE  deletes the specified resource
+notes/10	PUT	    replaces the specified resource with the included request data
+notes/10	PATCH	replaces the specified resource with the included request data*/
+
+//const http = require('http')
 
 // app.post('/notes', (request, response) => {
 //     const note = request.body
