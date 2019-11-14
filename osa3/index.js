@@ -24,16 +24,42 @@ let persons = [
     },
     {
         name: 'Luke Skywalker',
-        number : '98-12234556',
-        id : 5
+        number: '98-12234556',
+        id: 5
     }
 ]
 
+//http://localhost:3001
 app.get('/', (request, response) => {
     response.send('<h1>FullStack open 2019 part three phonebook application</h1>')
 })
 
-//localhost:3001/api/persons
+//Phonebook backend step2 Date, info and number of persons in phonebook
+const info = `Phonebook has info for ${persons.length} people <br></br> ${Date()}`
+app.get('/info', (request, response) => {
+    response.send(info)
+})
+
+//Phonebook backend step3 http://localhost:3001/api/persons/{id} The HTTP 404, 404 Not Found, 404, Page Not Found, or Server
+app.get('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
+    const person = persons.find(person => person.id === id)
+
+    if (!person) {
+        response.status(404).end()
+    } else {
+        response.json(person)
+    }
+})
+
+//puhelinluettelon backend step4 --> DELETE http://localhost:3001/api/persons/{id}
+app.delete('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
+    persons = persons.filter(person => person.id !== id)
+    response.status(204).end()
+})
+
+//http://localhost:3001/api/persons
 app.get('/api/persons', (request, response) => {
     response.json(persons);
 })
