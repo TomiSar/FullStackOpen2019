@@ -25,37 +25,47 @@ class App extends React.Component {
 
   addPerson = event => {
     event.preventDefault();
-    const personObj = {
-      name: this.state.newName,
-      number: this.state.newNumber,
-      id: this.state.newId
-    };
+    phoneService.getAll().then(response => {
+      const finalID = response.data.map(person => person.id).pop();
 
-    const isOnPhonebook = this.state.persons.map(person => person.name).includes(this.state.newName);
+      const personObj = {
+        name: this.state.newName,
+        number: this.state.newNumber,
+        id: finalID + 1
+      };
 
-    if (!isOnPhonebook) {
-      phoneService.create(personObj).then(response => {
-        this.setState({
-          persons: this.state.persons.concat(personObj),
-          newName: ''
-        })
-      });
-    } else {
-      if (window.confirm(`${this.state.newName} is already added to phonebook, replace the old number with a new one?`)) {
-        phoneService.getAll().then(response => {
-          const oldNumber = response.data.find(person => person.name === this.state.newName)
+      const existPhonebook = this.state.persons.map(person => person.name).includes(this.state.newName);
 
-          phoneService.update(oldNumber.id, personObj).then(response => {
-            this.setState({
-              persons: this.state.persons.map(person => (person.id !== oldNumber.id ? person : personObj)),
-              newName: '',
-              newNumber: '',
-              newId: ''
-            })
+      if (!existPhonebook) {
+        phoneService.create(personObj).then(response => {
+          this.setState({
+            persons: this.state.persons.concat(personObj),
+            newName: ''
           })
         })
+      } else {
+        if (window.confirm(`${this.state.newName} is already added to phonebook, replace the old number with a new one?`)) {
+          phoneService.getAll().then(response => {
+            const oldPersonData = response.data.find(person => person.name === this.state.newName);
+
+            if (!oldPersonData) {
+              throw new Error(`Information ${personObj.name} has already been removed from server`)
+            }
+            phoneService.update(oldPersonData.id, personObj).then(response => {
+              this.setState({
+                persons: this.state.persons.map(person => (person.id !== oldPersonData.id ? person : personObj)),
+                newName: '',
+                newNumber: '',
+                newId: ''
+              })
+            })
+          })
+            .catch(error => {
+              alert(error)
+            })
+        }
       }
-    }
+    })
   }
 
   addNewName = event => {
@@ -70,7 +80,7 @@ class App extends React.Component {
     this.setState({ filter: event.target.value });
   };
 
-  removePerdonPhonebook = (id, name) => {
+  removePersonPhonebook = (id, name) => {
     const message = `Delete ${name} ?`
 
     if (window.confirm(message)) {
@@ -98,7 +108,7 @@ class App extends React.Component {
           addNewNumber={this.addNewNumber}
         />
         <h2>Numbers</h2>
-        <PersonList persons={this.state.persons} filter={this.state.filter} remove={this.removePerdonPhonebook} />
+        <PersonList persons={this.state.persons} filter={this.state.filter} remove={this.removePersonPhonebook} />
       </div>
     );
   }
