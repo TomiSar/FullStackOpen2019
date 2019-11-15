@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const bodyparser = require('body-parser')
-
 app.use(bodyparser.json())
 
 let persons = [
@@ -37,13 +36,18 @@ app.get('/', (request, response) => {
     response.send('<h1>FullStack open 2019 part three phonebook application</h1>')
 })
 
-//Phonebook backend step2 Date, info and number of persons in phonebook
-const info = `Phonebook has info for ${persons.length} people <br></br> ${Date()}`
-app.get('/info', (request, response) => {
-    response.send(info)
+//http://localhost:3001/api/persons
+app.get('/api/persons', (request, response) => {
+    response.json(persons);
 })
 
-//Phonebook backend step3 http://localhost:3001/api/persons/{id} The HTTP 404, 404 Not Found, 404, Page Not Found, or Server
+//Phonebook backend step2 Date, info and number of persons in phonebook http://localhost:3001/info
+app.get('/info', (request, response) => {
+    response.send(`Phonebook has info for ${persons.length} people <br></br> ${Date()}`);
+})
+
+//Phonebook backend step3 http://localhost:3001/api/persons/{id} 
+//if person id doesn't exist return The HTTP 404, 404 Not Found, 404, Page Not Found, or Server
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     const person = persons.find(person => person.id === id)
@@ -62,9 +66,8 @@ app.delete('/api/persons/:id', (request, response) => {
     response.status(204).end()
 })
 
-//Phonebook backend step5 Add new person in phonebook --> POST http://localhost:3001/api/persons
-app.post('/api/persons/:id', (request, response) => {
-    //const randomNumberId = Math.floor((Math.random() * 10000) + 1);
+//Phonebook backend step5/step6 Add new person in phonebook --> POST http://localhost:3001/api/persons
+app.post('/api/persons', (request, response) => {
     const body = request.body
     console.log(body);
 
@@ -74,7 +77,7 @@ app.post('/api/persons/:id', (request, response) => {
         return response.status(400).json({ error: 'Number information is missing' })
     }
 
-    const Person = {
+    const person = {
         name: body.name,
         number: body.number,
         id: Math.floor(Math.random() * 10000 + 1)
@@ -82,23 +85,9 @@ app.post('/api/persons/:id', (request, response) => {
 
     persons = persons.concat(person);
     response.json(person)
-
-    // persons = persons.concat(person);
-    // response.json(person)
-
-    // const maxId = persons.length > 0 ? Math.max(...persons.map(p => p.id)) : 0
-    // const person = request.body
-    // person.id = maxId + 1
-
-    // notes = persons.concat(person)
-    // response.json(person)
 })
 
-//http://localhost:3001/api/persons
-app.get('/api/persons', (request, response) => {
-    response.json(persons);
-})
-
+//Port for localhost
 const port = process.env.port || 3001;
 app.listen(port, () => {
     console.log(`Server running on localhost:${port}`)
