@@ -1,7 +1,14 @@
 const express = require('express');
 const app = express();
 const bodyparser = require('body-parser')
+const morgan = require('morgan')
+
 app.use(bodyparser.json())
+app.use(morgan(':method :url :status - :response-time ms :res'))
+
+morgan.token('res', function (res) {
+    return JSON.stringify(res.body);
+});
 
 let persons = [
     {
@@ -69,7 +76,7 @@ app.delete('/api/persons/:id', (request, response) => {
 //Phonebook backend step5/step6 Add new person in phonebook --> POST http://localhost:3001/api/persons
 app.post('/api/persons', (request, response) => {
     const body = request.body
-    console.log(body);
+    //console.log(body);
 
     if (body.name === undefined) {
         return response.status(400).json({ error: 'name information is missing' })
