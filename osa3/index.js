@@ -52,7 +52,7 @@ app.get('/api/persons', (request, response) => {
 
 //Phonebook backend step2 Date, info and number of persons in phonebook http://localhost:3001/info
 app.get('/info', (request, response) => {
-    response.send(`Phonebook has info for ${persons.length} people <br></br> ${Date()}`);
+    response.send(`<b>Phonebook has info for ${persons.length} people <br></br> ${Date()}</b>`);
 })
 
 //Phonebook backend step3 http://localhost:3001/api/persons/{id} 
