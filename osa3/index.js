@@ -5,8 +5,13 @@ const morgan = require('morgan')
 const cors = require('cors')
 
 app.use(bodyparser.json())
+
+//https://github.com/expressjs/morgan#creating-new-tokens
+//:method :url      :status -:response-time ms :res'
+//POST    /api/persons 200 - 0.251 ms {"name":"Chuck Norris","number":"666-666666"}
 app.use(morgan(':method :url :status - :response-time ms :res'))
 app.use(cors())
+//app.use(express.static('build'))
 
 morgan.token('res', function (res) {
     return JSON.stringify(res.body);
@@ -55,7 +60,7 @@ app.get('/info', (request, response) => {
     response.send(`<b>Phonebook has info for ${persons.length} people <br></br> ${Date()}</b>`);
 })
 
-//Phonebook backend step3 http://localhost:3001/api/persons/{id} 
+//Phonebook backend step3 http://localhost:3001/api/persons/{id}
 //if person id doesn't exist return The HTTP 404, 404 Not Found, 404, Page Not Found, or Server
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
@@ -76,11 +81,12 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 //Phonebook backend step5/step6 Add new person in phonebook --> POST http://localhost:3001/api/persons
+//Generate random id between 1-10000
 app.post('/api/persons', (request, response) => {
     const body = request.body
 
     if (body.name === undefined) {
-        return response.status(400).json({ error: 'name information is missing' })
+        return response.status(400).json({ error: 'Name information is missing' })
     } else if (body.number === undefined) {
         return response.status(400).json({ error: 'Number information is missing' })
     }
@@ -98,5 +104,5 @@ app.post('/api/persons', (request, response) => {
 //Port for localhost
 const port = process.env.port || 3001;
 app.listen(port, () => {
-    console.log(`Server running on localhost:${port}`)
+    console.log(`Server running on port ${port}`)
 })
